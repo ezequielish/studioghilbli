@@ -2,8 +2,11 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Contracts\Validation\Validator;
+use App\Http\Traits\AuthTrait;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 
 class UserRequest extends FormRequest
@@ -11,7 +14,6 @@ class UserRequest extends FormRequest
     protected $method_user_create = "POST";
     protected $method_user_update = "PUT";
     protected $method_user_delete = "DELETE";
-    protected $user_auth = "null";
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -19,12 +21,8 @@ class UserRequest extends FormRequest
     {
         $autorized = [$this->method_user_update, $this->method_user_delete];
         if (in_array($request->method(), $autorized)) {
-            if (!isset($this->user_auth)) {
-                //User::find(id);//Validar que el id exista en la bd
-                throw new \Exception("Unauthorized", 401);
-            }
+            AuthTrait::user_autorized($request);
         }
-
         return true;
     }
 
@@ -41,14 +39,14 @@ class UserRequest extends FormRequest
             $rules = [
                 'name' => 'required|string|min:2|max:60',
                 'email' => 'required|unique:users|email',
-                'pwss' =>  $password_rules,
+                'pwss' => $password_rules,
             ];
         }
         if ($request->method() == $this->method_user_update) {
             $rules = [
                 'name' => 'max:255',
-                'email' => 'unique:users|email',
-                'pwss' => $password_rules->nullable(),
+                'email' => ['email', Rule::unique('users')->ignore(Auth::guard('api')->user()->id)],
+                'pwss' => ['nullable', $password_rules],
             ];
         }
 
@@ -56,7 +54,7 @@ class UserRequest extends FormRequest
     }
 
     /**
-     * Method that handles error messages when rules method fails
+     * Method that handles error messages when rules methods fails
      */
     protected function failedValidation(Validator $validator)
     {
@@ -78,4 +76,5 @@ class UserRequest extends FormRequest
 
         throw new \Exception($msg, 400);
     }
+
 }

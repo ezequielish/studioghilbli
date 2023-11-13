@@ -33,12 +33,18 @@ return [
     |
     | Supported: "session"
     |
-    */
+     */
 
     'guards' => [
         'web' => [
             'driver' => 'session',
             'provider' => 'users',
+            'hash' => false,
+        ],
+        'api' => [
+            'driver' => 'sanctum',
+            'provider' => 'users',
+            'hash' => false,
         ],
     ],
 
@@ -57,14 +63,13 @@ return [
     |
     | Supported: "database", "eloquent"
     |
-    */
+     */
 
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
         // 'users' => [
         //     'driver' => 'database',
         //     'table' => 'users',
@@ -88,7 +93,7 @@ return [
     | generating more password reset tokens. This prevents the user from
     | quickly generating a very large amount of password reset tokens.
     |
-    */
+     */
 
     'passwords' => [
         'users' => [
@@ -108,7 +113,7 @@ return [
     | times out and the user is prompted to re-enter their password via the
     | confirmation screen. By default, the timeout lasts for three hours.
     |
-    */
+     */
 
     'password_timeout' => 10800,
 

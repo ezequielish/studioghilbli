@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LoginController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -14,13 +15,11 @@ use Illuminate\Support\Facades\Route;
 | be assigned to the "api" middleware group. Make something great!
 |
  */
-
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::middleware("auth.basic")->post('/login', [LoginController::class, 'user_token']);
 
 Route::controller(UserController::class)->group(function () {
     Route::post('/user', 'create_update');
-    Route::put('/user/update', 'create_update');
-    Route::delete('/user', 'delete_user');
+    Route::middleware(['auth:sanctum', 'ability:user_edit'])->put('/user/update', 'create_update');
+    Route::middleware(['auth:sanctum', 'ability:user_delete'])->delete('/user', 'delete_user');
 });
+

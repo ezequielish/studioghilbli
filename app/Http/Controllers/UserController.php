@@ -3,59 +3,61 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UserRequest;
+use App\Http\Traits\AuthTrait;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     protected $request = "";
-    protected $userData = "";
+    protected $user_data = "";
     protected $userlogged = null;
     protected $user_model = null;
 
     public function __construct(UserRequest $request)
     {
-        if (true) {
-            $this->userlogged = $this->dummy_data();
+        if ($request->isMethod('put') || $request->isMethod('delete')) {
+            $user = AuthTrait::user_logged();
+            $this->userlogged = $user;
         }
         $this->request = $request;
         $this->user_model = $request->isMethod('post') ? new User() : $this->userlogged;
         $this->store();
-
     }
 
-    private function dummy_data()
-    {
-        $user_model = new \stdClass();
-        $user_model->name = "Misael";
-        $user_model->email = "misa@g.com";
-        $user_model->password = "eze1993";
-        $user_model->delete = new \stdClass();
-        return $user_model;
-    }
+    // private function dummy_data()
+    // {
+    //     $user_model = new \stdClass();
+    //     $user_model->name = "Misael";
+    //     $user_model->email = "misa@g.com";
+    //     $user_model->password = "eze1993";
+    //     $user_model->delete = new \stdClass();
+    //     return $user_model;
+    // }
 
-    private function store()
+    private function store(): void
     {
         $name = isset($this->request->name) ? $this->request->name : $this->userlogged->name;
         $email = isset($this->request->email) ? $this->request->email : $this->userlogged->email;
-        $pwss = isset($this->request->pwss) ? $this->request->pwss : $this->userlogged->passord;
+        $pwss = isset($this->request->pwss) ? Hash::make($this->request->pwss) : $this->userlogged->password;
 
-        $userData = [
+        $user_data = [
             'name' => $name,
             'email' => $email,
             'pwss' => $pwss,
         ];
 
-        $this->userData = $userData;
+        $this->user_data = $user_data;
 
     }
 
-    public function create_update()
+    public function create_update(): JsonResponse
     {
         try {
-            $this->user_model->name = $this->userData['name'];
-            $this->user_model->email = $this->userData['email'];
-            $this->user_model->password = Hash::make($this->userData['pwss']);
+            $this->user_model->name = $this->user_data['name'];
+            $this->user_model->email = $this->user_data['email'];
+            $this->user_model->password = $this->user_data['pwss'];
             $this->user_model->save();
             $code = $this->request->method() == "POST" ? 201 : 200;
             return response()->json([
@@ -67,10 +69,10 @@ class UserController extends Controller
         }
     }
 
-    public function delete_user()
+    public function delete_user(): JsonResponse
     {
         try {
-            $this->user_model->delete;
+            $this->user_model->delete();
             return response()->json([
                 'error' => false,
                 'message' => 'deleted user',

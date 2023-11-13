@@ -42,34 +42,34 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
 
-        //     /**
-        //      * validate  request body
-        //      */
-        //     // if (isset($exception->validator)) {
-        //     //     $msg = [];
-
-        //     //     foreach ((array) $exception->validator->messages() as $k => $value) {
-        //     //         if (\is_array($value)) {
-        //     //             foreach ($value as $key_v => $val) {
-        //     //                 array_push($msg, $val[0]);
-        //     //             }
-        //     //         }
-        //     //     }
-        //     return response()->json(['error' => true, 'message' => $msg[0]], 400);
-
         $message = $exception->getMessage();
-        $expreg = '/(SQLSTATE)|(SQLCODE)/';
+        $code =  $exception->getCode() > 2 ? $exception->getCode() : 500;
+        $expreg_sql = '/(SQLSTATE)|(SQLCODE)/';
+        $expreg_auth_1 = '/Unauthenticated|Invalid credentials/';
+        $expreg_auth_2 = '/Invalid ability provided/';
+
         $resp = [
             "error" => true,
             "message" => $exception->getMessage() ?? 'Internal Error',
         ];
 
-        if (preg_match($expreg, $message) && config("app.env") == "local") {
+        //DEV
+        if (preg_match($expreg_sql, $message) && config("app.env") == "local") {
             return response()->json($resp, 500);
         }
 
+        /////////////////////////////////////////////////////////////////////////////////////////////////////
+        if (preg_match($expreg_auth_1, $message) ) {
+            return response()->json($resp, 401);
+        }
+
+        if (preg_match($expreg_auth_2, $message) ) {
+            return response()->json($resp, 403);
+        }
+
+
         if (method_exists($exception, 'getCode') && method_exists($exception, 'getMessage')) {
-            $code = (intval($exception->getCode()) > 0 ? $exception->getCode() : 500);
+            $code = (intval($code));
             return response()->json($resp, $code);
         }
 
