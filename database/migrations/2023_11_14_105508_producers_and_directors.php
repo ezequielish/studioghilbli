@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('producers_and__director', function (Blueprint $table) {
+        Schema::create('producers_and_director', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('photo_url')->nullable();
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('producers_and__director');
+        Schema::dropIfExists('producers_and_director');
     }
 };

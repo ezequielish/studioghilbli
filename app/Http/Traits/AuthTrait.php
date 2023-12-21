@@ -13,6 +13,9 @@ trait AuthTrait
         return ["user_delete", "user_edit", "movie_fav"];
     }
 
+    /**
+     * We verify that a Bearer token is sent in the request and that it is a valid token
+     */
     public static function user_autorized(Request $request): void
     {
         try {
