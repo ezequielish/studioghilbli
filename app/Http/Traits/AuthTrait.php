@@ -33,7 +33,7 @@ trait AuthTrait
 
     }
 
-    public static function generate_public_token($user)
+    public static function generate_public_token($user): array
     {
         $token = $user->createToken('public', self::get_scope_public())->plainTextToken;
         $data = [
@@ -46,6 +46,16 @@ trait AuthTrait
         ];
 
         return $data;
+    }
+
+    public static function clear_user_token(String $name, $tokens = null)
+    {
+        if ($tokens !== null) {
+            $tokens->tokens()->delete();
+            return true;
+        }
+
+        Auth::guard('api')->user()->tokens()->where('name', $name)->delete();
     }
 
     public static function remmber_token(String $token, User $user): void

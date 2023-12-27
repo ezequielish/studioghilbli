@@ -43,7 +43,8 @@ class Handler extends ExceptionHandler
     {
 
         $message = $exception->getMessage();
-        $code =  $exception->getCode() > 2 ? $exception->getCode() : 500;
+        $code_default = method_exists($exception, 'getStatusCode') ? $exception->getStatusCode() : 500;
+        $code = $exception->getCode() > 2 ? $exception->getCode() : $code_default;
         $expreg_sql = '/(SQLSTATE)|(SQLCODE)/';
         $expreg_auth_1 = '/Unauthenticated|Invalid credentials/';
         $expreg_auth_2 = '/Invalid ability provided/';
@@ -59,14 +60,13 @@ class Handler extends ExceptionHandler
         }
 
         /////////////////////////////////////////////////////////////////////////////////////////////////////
-        if (preg_match($expreg_auth_1, $message) ) {
+        if (preg_match($expreg_auth_1, $message)) {
             return response()->json($resp, 401);
         }
 
-        if (preg_match($expreg_auth_2, $message) ) {
+        if (preg_match($expreg_auth_2, $message)) {
             return response()->json($resp, 403);
         }
-
 
         if (method_exists($exception, 'getCode') && method_exists($exception, 'getMessage')) {
             $code = (intval($code));

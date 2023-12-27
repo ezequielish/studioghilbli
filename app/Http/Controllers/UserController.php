@@ -73,6 +73,8 @@ class UserController extends Controller
     {
         try {
             $this->user_model->delete();
+            AuthTrait::clear_user_token("public");
+            AuthTrait::clear_user_token("admin");
             return response()->json([
                 'error' => false,
                 'message' => 'deleted user',

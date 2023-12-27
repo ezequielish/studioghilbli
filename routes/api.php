@@ -1,8 +1,7 @@
 <?php
 
-use App\Http\Controllers\UserController;
 use App\Http\Controllers\LoginController;
-use Illuminate\Http\Request;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,9 +16,10 @@ use Illuminate\Support\Facades\Route;
  */
 Route::middleware("auth.basic")->post('/login', [LoginController::class, 'user_token']);
 
+Route::get("/refresh-token/{token}", [LoginController::class, 'refresh_token']);
+
 Route::controller(UserController::class)->group(function () {
     Route::post('/user', 'create_update');
     Route::middleware(['auth:sanctum', 'ability:user_edit'])->put('/user/update', 'create_update');
     Route::middleware(['auth:sanctum', 'ability:user_delete'])->delete('/user', 'delete_user');
 });
-
