@@ -27,7 +27,7 @@ class EmailsController extends Controller
             $_data = [];
             $sender = new Address($data->email, $data->name);
             $_data['name'] = \ucfirst($data['name']);
-            $_data['verification_url'] = env("APP_URL") . "verificate-email/" . self::save_varification_email_url($data->id);
+            $_data['verification_url'] = env("APP_URL") ."/". "verificate-email/" . self::save_varification_email_url($data->id);
 
             Mail::to($sender)->send(new VerificationEmail($_data));
         } catch (\Throwable $th) {
