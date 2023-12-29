@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\EmailsController;
 use App\Http\Requests\UserRequest;
 use App\Http\Traits\AuthTrait;
 use App\Models\User;
@@ -60,9 +61,13 @@ class UserController extends Controller
             $this->user_model->password = $this->user_data['pwss'];
             $this->user_model->save();
             $code = $this->request->method() == "POST" ? 201 : 200;
+            $msg = $this->request->method() == "POST" ? 'created user.' : 'updated user.';
+            if ($this->request->method() == "POST") {
+                EmailsController::handle_verify_email($this->user_model);
+            }
             return response()->json([
                 'error' => false,
-                'message' => 'created user.',
+                'message' => $msg,
             ], 201);
         } catch (\Throwable $th) {
             throw $th;
@@ -84,4 +89,25 @@ class UserController extends Controller
             throw $th;
         }
     }
+
+    public static function set_active_email(int $id): bool
+    {
+
+        try {
+            $user = User::find($id);
+
+            if(isset($user)){
+                $user->email_verified_at = date('Y-m-d');
+                $user->save();
+
+                return true;
+            }
+
+            return false;
+
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
 }
