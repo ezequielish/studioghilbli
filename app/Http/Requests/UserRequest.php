@@ -39,7 +39,7 @@ class UserRequest extends FormRequest
             $rules = [
                 'name' => 'required|string|min:2|max:60',
                 'email' => 'required|unique:users|email',
-                'pwss' => $password_rules,
+                'pwss' => ['required', $password_rules],
             ];
         }
         if ($request->method() == $this->method_user_update) {

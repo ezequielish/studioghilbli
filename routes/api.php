@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProducersDirectorsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,3 +24,6 @@ Route::controller(UserController::class)->group(function () {
     Route::middleware(['auth:sanctum', 'ability:user_edit', 'verify-email'])->put('/user/update', 'create_update');
     Route::middleware(['auth:sanctum', 'ability:user_delete'])->delete('/user', 'delete_user');
 });
+
+
+Route::get("/producers_directors", [ProducersDirectorsController::class, 'get_all']);

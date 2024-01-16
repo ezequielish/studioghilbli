@@ -53,6 +53,7 @@ class UserController extends Controller
 
     }
 
+
     public function create_update(): JsonResponse
     {
         try {
@@ -61,14 +62,14 @@ class UserController extends Controller
             $this->user_model->password = $this->user_data['pwss'];
             $this->user_model->save();
             $code = $this->request->method() == "POST" ? 201 : 200;
-            $msg = $this->request->method() == "POST" ? 'created user.' : 'updated user.';
+            $msg = $this->request->method() == "POST" ? 'created user, verify your email and activate your account.' : 'updated user.';
             if ($this->request->method() == "POST") {
                 EmailsController::handle_verify_email($this->user_model);
             }
             return response()->json([
                 'error' => false,
                 'message' => $msg,
-            ], 201);
+            ], $code);
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -96,7 +97,7 @@ class UserController extends Controller
         try {
             $user = User::find($id);
 
-            if(isset($user)){
+            if (isset($user)) {
                 $user->email_verified_at = date('Y-m-d');
                 $user->save();
 

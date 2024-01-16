@@ -4,67 +4,64 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
-class Producers_DirectorsSeeder extends Seeder
+class ProducersDirectorsSeeder extends Seeder
 {
     private static function get_people(): array
     {
         return array(
             [
                 "name" => "Hayao Miyazaki",
-                "url" => "",
+                "url" => "producer_director/Hayao_Miyazaki.jpg",
             ],
             [
                 "name" => "Isao Takahata",
-                "url" => "",
+                "url" => "producer_director/Isao_Takahata.jpg",
             ],
             [
                 "name" => "Toru Hara",
-                "url" => "",
+                "url" => "producer_director/Toru_Hara.png",
             ],
             [
                 "name" => "Toshio Suzuki",
-                "url" => "",
+                "url" => "producer_director/Toshio_Suzuki.jpg",
             ],
             [
                 "name" => "Yoshifumi Kondō",
-                "url" => "",
-            ],
-            [
-                "name" => "Yoshifumi Kondō",
-                "url" => "",
+                "url" => "producer_director/Yoshifumi_Kondō.png",
             ],
             [
                 "name" => "Hiroyuki Morita",
-                "url" => "",
+                "url" => "producer_director/Hiroyuki_Morita.jpg",
             ],
             [
                 "name" => "Gorō Miyazaki",
-                "url" => "",
+                "url" => "producer_director/Gorō_Miyazaki.jpg",
             ],
             [
                 "name" => "Hiromasa Yonebayashi",
-                "url" => "",
+                "url" => "producer_director/Hiromasa_Yonebayashi.jpg",
             ],
             [
                 "name" => "Yoshiaki Nishimura",
-                "url" => "",
+                "url" => "producer_director/Yoshiaki_Nishimura.jpg",
             ],
             [
                 "name" => "Michaël Dudok de Wit",
-                "url" => "",
+                "url" => "producer_director/Michaël_Dudok_de_Wit.jpg",
             ],
             [
                 "name" => "Vincent Maraval",
-                "url" => "",
+                "url" => "producer_director/Vincent_Maraval.jpg",
             ],
             [
                 "name" => "Pascal Caucheteux",
-                "url" => "",
+                "url" => "producer_director/Pascal_Caucheteux.jpg",
             ],
             [
                 "name" => "Grégoire Sorlat",
-                "url" => "",
+                "url" => "producer_director/Grégoire_Sorlat.jpg",
             ],
         );
     }
@@ -75,18 +72,18 @@ class Producers_DirectorsSeeder extends Seeder
     {
         $people = self::get_people();
         foreach ($people as $key => $value) {
-            $model = DB::table('producers_and__director');
+            $model = DB::table('producers_and_director');
             $person = $model->where('name', $value['name'])->first();
 
             if (isset($person->name)) {
-                $person->name = $value['name'];
-                $person->photo_url = $value['url'];
+                $model->where('name', $value['name'])->update(['name' => $value['name']]);
+                $model->where('name', $value['name'])->update(['photo_url' => $value['url']]);
+            } else {
+                $model->insert([
+                    'name' => $value['name'],
+                    'photo_url' => $value['url'],
+                ]);
             }
-
-            $model->insert([
-                'name' => $value['name'],
-                'photo_url' => $value['url'],
-            ]);
         }
     }
 }
